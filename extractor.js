@@ -7,13 +7,27 @@ const archivoMenuPrincipal = 'C:/Users/lapena/Documents/Luis Angel/Intelisis/Int
 const arreglo = ['Mov.Ventas', 'Mov.Inventarios']
 const nuevaCarpeta= 'ArchivosNEW/'
 const recodificacion = 'Latin1'
+const jsonRegEx = {
+  'borrarTexto' : {
+                    'borrarComentarios': /\;.*/g,
+                    'borrarAmpersand': /\&/g
+                  },
+  'reducirRuta': /.*\//,
+  'buscarPunto': /\./g,
+  'limpiarCadena': {
+                     'limpiarObjeto': /[\[\"\]]/g,
+                     'buscarComa': /\,/gm
+                   },
+  'buscarCampos': /Nombre\=.*?(?=\\)|(?<=\\n)Menu\=.*?(?=\\)|NombreDesplegar\=.*?(?=\\)|TipoAccion\=.*?(?=\\)|ClaveAccion\=.*?(?=\\)/gm
+}
 
 function crearExpresion (arreglo, posicion) {
-  return new RegExp(`\\[.*?${transformar('agregarEscape',arreglo[posicion])}[^*]*?(?=\\[)`, `g`)
+  return new RegExp(`\\[.*?${arreglo[posicion].replace(jsonRegEx.buscarPunto, '\\.')}[^*]*?(?=\\[)`, `g`)
+  
 }
 
 function extraer (archivo, arreglo, texto) {
-  texto = transformar('borrarTexto', texto + '\n[')
+  texto = texto.replace(jsonRegEx.borrarTexto.borrarComentarios, '').replace(jsonRegEx.borrarTexto.borrarAmpersand, '') + '\n['
   let extraccionCompleta = ''
   for(let posicion =0; posicion < arreglo.length; posicion++) {
     extraccionCompleta = extraerTexto(archivo, crearExpresion(arreglo, posicion), extraccionCompleta, posicion, texto)
@@ -22,12 +36,13 @@ function extraer (archivo, arreglo, texto) {
 }
 
 function extraerTexto (archivo, expresion, extraccionCompleta, posicion, texto) {
-  let extraccionGeneral = transformar('matchGeneral', JSON.stringify(texto.match(expresion)))
+  let extraccionGeneral =JSON.stringify(texto.match(expresion)).match(jsonRegEx.buscarCampos)
   let extraccionReducida = JSON.stringify(extraccionGeneral)
   extraccionCompleta += extraccionReducida + '\n\n'
-  extraccionCompleta = transformar('limpiarCadena', extraccionCompleta)
-  console.log(`${posicion} : ${transformar('reducirRuta', archivo)} --- ${arreglo[posicion]} \n`+
-              `RegEx creada:  ${expresion} \nExtraccion: \n${transformar('limpiarCadena',extraccionReducida)}\n`)
+  extraccionCompleta = extraccionCompleta.replace(jsonRegEx.limpiarCadena.limpiarObjeto, '').replace(jsonRegEx.limpiarCadena.buscarComa, '\n')
+  console.log(`${posicion} : ${archivo.replace(jsonRegEx.reducirRuta, '')} --- ${arreglo[posicion]} \n`+
+              `RegEx creada:  ${expresion} \nExtraccion: \n`+
+              `${extraccionReducida.replace(jsonRegEx.limpiarCadena.limpiarObjeto, '').replace(jsonRegEx.limpiarCadena.buscarComa, ', ')}\n`)
   return extraccionCompleta
 }
 
@@ -40,34 +55,15 @@ function recodificar(archivo, recodificacion) {
 }
 
 function remplazarTexto (archivo, texto) {
-  fs.writeFile(nuevaCarpeta + transformar('reducirRuta', archivo), texto, function (error) {
+  fs.writeFile(nuevaCarpeta + archivo.replace(jsonRegEx.reducirRuta, ''), texto, function (error) {
     if (error) {
       return console.log(error)
     }
+    console.log(jsonRegEx.borrarTexto)
     console.log('CODIFICACION ALMACENADA: ' +
-                 chardet.detectFileSync(nuevaCarpeta+transformar('reducirRuta', archivo)) +
-                 '  --  ' + transformar('reducirRuta', archivo))
+                 chardet.detectFileSync(nuevaCarpeta+archivo.replace(jsonRegEx.reducirRuta, '')) +
+                 '  --  ' +  archivo.replace(jsonRegEx.reducirRuta, ''))
   })
-}
-
-function transformar (opcion, texto) {
-  switch(opcion){
-    case 'borrarTexto': {
-      return texto.replace(/\;.*/g, '').replace(/\&/g, '')
-    }
-    case 'reducirRuta': {
-      return texto.replace(/.*\//, '')
-    }
-    case 'agregarEscape': {
-      return texto.replace(/\./g, '\\.')
-    }
-    case 'limpiarCadena': {
-      return texto = texto.replace(/[\[\"\]]/g, '').replace(/\,/gm, '\n')
-    }
-    case 'matchGeneral': {
-      return texto.match(/Nombre\=.*?(?=\\)|(?<=\\n)Menu\=.*?(?=\\)|NombreDesplegar\=.*?(?=\\)|TipoAccion\=.*?(?=\\)|ClaveAccion\=.*?(?=\\)/gm)
-    }
-  }
 }
 
 procesar(archivoMenuPrincipal, recodificacion)
