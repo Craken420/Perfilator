@@ -4,7 +4,8 @@
   "description": "Herramienta de extraccion de informacion de perfiles",
   "main": "extractor.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon perfilatorBD.js"
   },
   "author": "Luis Angel Peña y Alma Bolaños",
   "license": "ISC",
