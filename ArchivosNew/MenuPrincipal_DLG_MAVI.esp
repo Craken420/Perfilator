@@ -1,0 +1,129 @@
+
+
+
+
+Nombre=EXPComp
+Menu=Exploradores Mavi
+NombreDesplegar=Compras
+TipoAccion=Dialogos
+ClaveAccion=MenuExpCompras
+
+Nombre=EXPCont
+Menu=Exploradores Mavi
+NombreDesplegar=Contabilidad
+TipoAccion=Dialogos
+ClaveAccion=DM0155SubContabilidad
+
+Nombre=EXPCuentDine
+Menu=Exploradores Mavi
+NombreDesplegar=Cuentas de Dinero
+TipoAccion=Formas
+ClaveAccion=ExplorarCtaDinero
+
+Nombre=EXPCxp
+NombreDesplegar=Cuentas por Pagar
+TipoAccion=Dialogos
+ClaveAccion=DM0155SubCxp
+Menu=Exploradores Mavi
+
+Nombre=EXPGastos
+Menu=Exploradores Mavi
+NombreDesplegar=Gastos
+TipoAccion=dialogos
+ClaveAccion=menuexpgastos
+
+Nombre=EXPPrelCobro
+NombreDesplegar=Preliminar de Cobro
+Menu=Exploradores Mavi
+TipoAccion=Expresion
+
+Nombre=EXPProve
+NombreDesplegar=Proveedores
+Menu=Exploradores Mavi
+TipoAccion=Formas
+ClaveAccion=ExplorarProv
+
+Nombre=EXPTesoreria
+Menu=Exploradores Mavi
+NombreDesplegar=Tesoreria
+TipoAccion=dialogos
+ClaveAccion=menuexpdinero
+
+Nombre=EXPVentas
+Menu=Exploradores Mavi
+NombreDesplegar=Ventas
+TipoAccion=Dialogos
+ClaveAccion=DM0155SubExpVentas
+
+
+
+Nombre=Herramienta.DM0155InformacionMavi
+Menu=Herramientas
+NombreDesplegar=Información de Sesión
+TipoAccion=Formas
+ClaveAccion=DM0155InformacionMaviFrm
+
+Nombre=Herramienta.DM0226InvMov
+Menu=Herramientas
+NombreDesplegar=Solicitud Inventario
+TipoAccion=Formas
+ClaveAccion=DM0226FlujoPapeFrm
+
+Nombre=Herramienta.DM0235ControlDepDisp
+Menu=Herramientas
+NombreDesplegar=DM0235 Control de Depositos y Dispersiones
+TipoAccion=Formas
+ClaveAccion=DM0235ControladorDepyDispFrm
+
+Nombre=Herramienta.EstadoCuentaDima
+NombreDesplegar=Estados de Cuenta
+TipoAccion=Expresion
+Menu=Herramientas
+
+Nombre=ComisionesChoferesMAVI
+NombreDesplegar=Comisiones Choferes
+Menu=Procesos
+TipoAccion=Formas
+ClaveAccion=ComisionesChoferes
+NombreDesplegar=Resultados Caja
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Nombre=ServicasaServicredSucursales
+NombreDesplegar=Servicasa Servicred Ventas
+TipoAccion=Formas
+ClaveAccion=MaviServicasaVtasPisoFrm
+Menu=Procesos
+
+Nombre=Mov.Ventas
+Menu=Procesos
+NombreDesplegar=Ventas
+TipoAccion=Formas
+ClaveAccion=Venta
+
+
+
+
+
+
+
+
+
+Nombre=REPMAVI
+NombreDesplegar=Reportes Mavi
+TipoAccion=Otros
+ClaveAccion=Reportes Especiales del Usuario
+Menu=Reportes Mavi
+
