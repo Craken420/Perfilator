@@ -19,33 +19,24 @@ function remplazarTexto (archivo, texto) {
 function extraer (archivo, array, texto) {
   texto = transformar(1, texto)
   texto = texto + '\n['
-  let extraccionCompleta= ''
-  for(let i =0; i<array.length; i++){
-    let arrayExpresion = array[i].replace(/\./g, '\\.')
-    let preExpresion = `\\[.*?${arrayExpresion}[^*]*?(?=\\[)`
-    var expresion = new RegExp(preExpresion, "g")
+  let extraccionCompleta = ''
+  for(let posicion =0; posicion < array.length; posicion++) {
+    let expresion = crearExpresion (array, posicion)
     var res = texto.match(expresion)
     let newres = JSON.stringify(res)
     let extraccion = newres.match(/Nombre\=.*?(?=\\)|(?<=\\n)Menu\=.*?(?=\\)|NombreDesplegar\=.*?(?=\\)|TipoAccion\=.*?(?=\\)|ClaveAccion\=.*?(?=\\)/gm)
     let newextraccion = JSON.stringify(extraccion)
     extraccionCompleta += newextraccion + '\n\n'
     extraccionCompleta = extraccionCompleta.replace(/[\[\"\]]/g, '').replace(/\,/gm, '\n')
-    console.log(`${i} : ${archivo.replace(/.*\//, '')} --- ${array[i]} \nRegEx creada:  ${expresion} \nExtraccion: ${newextraccion.replace(/[\[\"\]]/g, '').replace(/\,/gm, ', ')}\n\n`)
+    console.log(`${posicion} : ${archivo.replace(/.*\//, '')} --- ${array[posicion]} \nRegEx creada:  ${expresion} \nExtraccion: ${newextraccion.replace(/[\[\"\]]/g, '').replace(/\,/gm, ', ')}\n\n`)
   }
   return extraccionCompleta
 }
-
-function transformar (opcion, texto) {
-  switch(opcion){
-    case 1: {
-      texto = texto.replace(/\;.*/g, '')
-      texto = texto.replace(/\&/g, '')
-      return texto
-    }
-  }
-  // texto = texto.replace(/\;.*/g, '')
-  // texto = texto.replace(/\&/g, '')
-  // return texto
+function crearExpresion (array, posicion) {
+  let arrayExpresion = array[posicion].replace(/\./g, '\\.')
+  let preExpresion = `\\[.*?${arrayExpresion}[^*]*?(?=\\[)`
+  var expresion = new RegExp(preExpresion, "g")
+  return expresion
 }
 
 function recodificar(archivo, recodificacion) {
