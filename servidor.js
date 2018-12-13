@@ -54,31 +54,12 @@ aplicacion.get('/Menus/:Usuario', (solicitud, respuesta) => {
         let item = respuestaSQL[i]["item"]
         consumo.push(item)
       }
-        
-    let extraccionMenuP = extractor.procesarArreglo(extractor.archivoMenuPrincipal, extractor.recodificacion, consumo)
-    let extraccionDLGMAVI= extractor.procesarArreglo(extractor.archivoDLGMAVI, extractor.recodificacion, consumo)
-        //let extraccionDLG= extractor.procesarArreglo(extractor.archivoDLGMAVI, extractor.recodificacion, consumo)
-        // var extraccion = extraer(archivo, arreglo, recodificar(archivo, recodificacion))
-        // let extraccionMenuP = extractor.extraer(extractor.archivoMenuPrincipal, consumo, extractor.recodificar(extractor.archivoMenuPrincipal, extractor))
-        // console.log(resultado.recordset);
-        // console.log('menuP: '+extraccionMenuP);
+      
+      let extraccionMenuP = extractor.procesarArreglo(extractor.archivoMenuPrincipal, extractor.recodificacion, consumo)
+      let extraccionDLGMAVI= extractor.procesarArreglo(extractor.archivoDLGMAVI, extractor.recodificacion, consumo)
       console.log('Recivido: '+ extraccionMenuP)
-        //extraccionMenuP = extraccionMenuP.replace(/(\\n)+/g, '\n').replace(/\"/, '{').replace(/\"/, '}')
-        // var jsonTexto = { }
-        // jsonTexto.algo='algodon'
-        // jsonTexto['cosa']='cualquier cosa'
-        // jsonTexto.variable = {
-        //     clave:'123',
-        //     nombre:'herramienta'
-        // }
-        // jsonTexto.newVar = {
-        //     item:extraccionMenuP
-         //let lol = JSON.stringify(extraccionMenuP)
-        // respuesta.json(lol.replace(/\\\\n/gm, '\n'))
-      //var myString = JSON.stringify(extraccionMenuP);
-      //var myObj = JSON.parse(myString);
-        respuesta.send(extraccionMenuP)
-        sql.close()
+      respuesta.send(extraccionMenuP)
+      sql.close()
     })
   })
 })

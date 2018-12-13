@@ -1,14 +1,15 @@
 const chardet = require('chardet')
 const fs = require('fs')
 const iconvlite = require('iconv-lite')
+
 exports.archivoDLGMAVI = 'C:/Users/lapena/Documents/Luis Angel/Intelisis/Intelisis3100/Reportes MAVI' +
                        '/MenuPrincipal_DLG_MAVI.esp'
+
 exports.archivoMenuPrincipal = 'C:/Users/lapena/Documents/Luis Angel/Intelisis/Intelisis3100/Codigo Original/' +
                              'MenuPrincipal.dlg'
-                             
-//const arreglo = ['Mov.Ventas', 'Mov.Inventarios']
-const nuevaCarpeta= 'ArchivosNEW/'
+
 exports.recodificacion = 'Latin1'
+
 const jsonRegEx = {
   'clsTexto' : {
                 'clsComentarios': /\;.*/g,
@@ -30,7 +31,6 @@ const jsonRegEx = {
     'claveAccion':/(?<=ClaveAccion\=).*/gm,
   }
 }
-var jsonGeneral = {}
 
 function crearExpresion (arreglo, posicion) {
   return new RegExp(`\\[.*?${arreglo[posicion].replace(jsonRegEx.buscarPunto, '\\.')}[^*]*?(?=\\[)`, `g`)
@@ -38,224 +38,73 @@ function crearExpresion (arreglo, posicion) {
 
 function extraer (archivo, arreglo, texto) {
   texto = texto.replace(jsonRegEx.clsTexto.clsComentarios, '').replace(jsonRegEx.clsTexto.clsAmpersand, '') + '\n['
- // var arrayobjItem = new Array();
-  var obj = {}
+  var objetoPerfiles = {}
   let extraccionReducida = ''
   for(let posicion =0; posicion < arreglo.length; posicion++) {
+
     let expresion = crearExpresion(arreglo, posicion)
     extraccionReducida = extraerTexto(expresion,texto)
-    let estado = extraccionReducida
-    //console.log('retorno de crearExpresion: ***********\n' +extraccionReducida + '\n*************' + typeof(extraccionReducida))
-    if (estado == 'null'){
+
+    if (extraccionReducida == 'null') {
       console.log('extractor no encontro coincidencia')
     } else {
-      let nombreMenuItem = extraccionReducida.match(jsonRegEx.buscarCampos.nombre)
-      let menuItem = extraccionReducida.match(jsonRegEx.buscarCampos.menu)
-      let nombreDesplegarItem = extraccionReducida.match(jsonRegEx.buscarCampos.nombreDesplegar)
-      let tipoAccionItem = extraccionReducida.match(jsonRegEx.buscarCampos.tipoAccion)
-      let claveAccionItem = extraccionReducida.match(jsonRegEx.buscarCampos.claveAccion)
-      console.log('***********primer sepillado\n')
-      console.log('nombreMenuItem:' + nombreMenuItem)
-      console.log('menuItem: ' + menuItem)
-      console.log('nombreDesplegarItem: ' + nombreDesplegarItem)
-      console.log('tipoAccionItem: ' + tipoAccionItem)
-      console.log('claveAccionItem: ' + claveAccionItem)
-      console.log('\n---------')
-      nombreMenuItem = JSON.stringify(nombreMenuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-      menuItem = JSON.stringify(menuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '') 
-      nombreDesplegarItem = JSON.stringify(nombreDesplegarItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-      tipoAccionItem = JSON.stringify(tipoAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-      claveAccionItem = JSON.stringify(claveAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-      console.log('***********Segundo cepillado \n')
-      console.log('nombreMenuItem:' + nombreMenuItem)
-      console.log('menuItem: ' + menuItem)
-      console.log('nombreDesplegarItem: ' + nombreDesplegarItem)
-      console.log('tipoAccionItem: ' + tipoAccionItem)
-      console.log('claveAccionItem: ' + claveAccionItem)
-      
-      obj[arreglo[posicion]] = {
-        'nombre': nombreMenuItem,
-        'menu': menuItem,
-        'nombreDesplegar': nombreDesplegarItem,
-        'tipoAccion': tipoAccionItem,
-        'claveAccion': claveAccionItem
+
+      let datosObjeto = extraerTextoObjeto(extraccionReducida)
+      extraerTextoObjeto(extraccionReducida, arreglo, posicion)
+
+      objetoPerfiles[arreglo[posicion]] = {
+        'nombre': datosObjeto.nombreMenuItem,
+        'menu': datosObjeto.menuItem,
+        'nombreDesplegar': datosObjeto.nombreDesplegarItem,
+        'tipoAccion': datosObjeto.tipoAccionItem,
+        'claveAccion': datosObjeto.claveAccionItem
       }
     }
-      // let nombreMenuItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.nombre)
-      // let menuItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.menu)
-      // let nombreDesplegarItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.nombreDesplegar)
-      // let tipoAccionItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.tipoAccion)
-      // let claveAccionItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.claveAccion)
-      // console.log('***********primer sepillado\n')
-      // console.log('nombreMenuItem:' + nombreMenuItem)
-      // console.log('menuItem: ' + menuItem)
-      // console.log('nombreDesplegarItem: ' + nombreDesplegarItem)
-      // console.log('tipoAccionItem: ' + tipoAccionItem)
-      // console.log('claveAccionItem: ' + claveAccionItem)
-      // console.log('\n---------')
-
-      // // let nombreMenuItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.nombre)
-      // // let menuItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.menu)
-      // // let nombreDesplegarItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.nombreDesplegar)
-      // // let tipoAccionItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.tipoAccion)
-      // // let claveAccionItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.claveAccion)
-      // // console.log('***********primer sepillado\n')
-      // // console.log('nombreMenuItem:' + nombreMenuItem)
-      // // console.log('menuItem: ' + menuItem)
-      // // console.log('nombreDesplegarItem: ' + nombreDesplegarItem)
-      // // console.log('tipoAccionItem: ' + tipoAccionItem)
-      // // console.log('claveAccionItem: ' + claveAccionItem)
-      // // console.log('\n---------')
-
-      // // nombreMenuItem = JSON.stringify(nombreMenuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-      // // menuItem = JSON.stringify(menuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '') 
-      // // nombreDesplegarItem = JSON.stringify(nombreDesplegarItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-      // // tipoAccionItem = JSON.stringify(tipoAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '') 
-      // // claveAccionItem = JSON.stringify(claveAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-      
-      
-      // console.log('***********Segundo cepillado \n')
-      // console.log('nombreMenuItem:' + nombreMenuItem)
-      // console.log('menuItem: ' + menuItem)
-      // console.log('nombreDesplegarItem: ' + nombreDesplegarItem)
-      // console.log('tipoAccionItem: ' + tipoAccionItem)
-      // console.log('claveAccionItem: ' + claveAccionItem)
-      
-      //console.log('\n--------')
-    // obj[arreglo[posicion]] = {
-    //   'nombre': nombreMenuItem,
-    //   'menu': menuItem,
-    //   'nombreDesplegar': nombreDesplegarItem,
-    //   'tipoAccion': tipoAccionItem,
-    //   'claveAccion': claveAccionItem
-    // }
-    }
-    //jsonTexto = extraccionFuncion.jsonTextoF
-    // for(key in arreglo){
-    //   if ( extraccionFuncion.objItem != null){
-    //     obj[arreglo[key]] = {
-    //       'nombre': extraccionFuncion.jsonTextoF.nombre,
-    //       'menu': extraccionFuncion.jsonTextoF.menu,
-    //       'nombreDesplegar': extraccionFuncion.jsonTextoF.nombreDesplegar,
-    //       'tipoAccion': extraccionFuncion.jsonTextoF.tipoAccion,
-    //       'claveAccion': extraccionFuncion.jsonTextoF.claveAccion
-    //     }
-    //   }
-    // }
-  //  console.log('estado arreglo: ' + extraccionFuncion.objItem)
-  //  if ( extraccionFuncion.objItem != null){
-  //   arrayobjItem.push(extraccionFuncion.jsonTextoF);
-  //  }
-
-  
-  console.log('\n\n obj antes de retornar ---------------\n\n')
-  console.log(obj)
-  return obj
-    //extraccionReducida:extraccionReducida,
-    //extraccionCompleta:extraccionCompleta,
-    //jsonTexto,
-    //arrayobjItem: arrayobjItem,
-    //obj
-   
+  }
+  return objetoPerfiles
 }
 
 function extraerTexto(expresion, texto) {
   let extraccion = JSON.stringify(texto.match(expresion)).match(jsonRegEx.buscarCampos.todos)
- 
     let extraccionString = JSON.stringify(extraccion)
     extraccionString = extraccionString.replace(jsonRegEx.limpiarCadena.limpiarObjeto, '').replace(jsonRegEx.limpiarCadena.buscarComa, '\n')
     return extraccionString
-  
- 
- 
-  //extraccionReducida = extraccionReducida.replace(jsonRegEx.limpiarCadena.limpiarObjeto, '').replace(jsonRegEx.limpiarCadena.buscarComa, '\n')
-  // return {
-  //   extraccionString
-  // }
 }
 
-function extraerTexto2(archivo, expresion, extraccionCompleta, posicion, texto, arreglo) {
-  let extraccionGeneral =JSON.stringify(texto.match(expresion)).match(jsonRegEx.buscarCampos.todos)
-  let extraccionReducida = JSON.stringify(extraccionGeneral)
-  extraccionCompleta += extraccionReducida + '\n\n'
-  let jsonTextoMR = extraerTextoJson(extraccionGeneral, arreglo, posicion)
+function extraerTextoObjeto(extraccionReducida) {
+  let nombreMenuItem = ''
+  let menuItem = ''
+  let nombreDesplegarItem = ''
+  let tipoAccionItem = ''
+  let claveAccionItem = ''
+
+  nombreMenuItem = extraccionReducida.match(jsonRegEx.buscarCampos.nombre)
+  menuItem = extraccionReducida.match(jsonRegEx.buscarCampos.menu)
+  nombreDesplegarItem = extraccionReducida.match(jsonRegEx.buscarCampos.nombreDesplegar)
+  tipoAccionItem = extraccionReducida.match(jsonRegEx.buscarCampos.tipoAccion)
+  claveAccionItem = extraccionReducida.match(jsonRegEx.buscarCampos.claveAccion)
+
+  nombreMenuItem = JSON.stringify(nombreMenuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
+  menuItem = JSON.stringify(menuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '') 
+  nombreDesplegarItem = JSON.stringify(nombreDesplegarItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
+  tipoAccionItem = JSON.stringify(tipoAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
+  claveAccionItem = JSON.stringify(claveAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
   
-  extraccionCompleta = extraccionCompleta.replace(jsonRegEx.limpiarCadena.limpiarObjeto, '').replace(jsonRegEx.limpiarCadena.buscarComa, '\n')
-  // console.log(`${posicion} : ${archivo.replace(jsonRegEx.reducirRuta, '')} --- ${arreglo[posicion]} \n`+
-  //             `RegEx creada:  ${expresion} \nExtraccion: \n`+
-  //             `${extraccionReducida.replace(jsonRegEx.limpiarCadena.limpiarObjeto, '').replace(jsonRegEx.limpiarCadena.buscarComa, ', ')}\n`)
   return {
-    extraccionCompleta: extraccionCompleta,
-    extraccionReducida: extraccionReducida.replace(jsonRegEx.limpiarCadena.limpiarObjeto, '').replace(jsonRegEx.limpiarCadena.buscarComa, '\n'),
-    jsonTextoF: jsonTextoMR.jsonTextoF,
-    objItem: jsonTextoMR.objItem
-  } 
-}
-
-
-
-function extraerTextoJson(extraccionGeneral, arreglo, posicion) {
-  var jsonTextoF = {}
-  if (extraccionGeneral != null) {
-    let nombreMenuItem = JSON.stringify(extraccionGeneral).match(jsonRegEx.buscarCampos.nombre)
-    let menuItem = JSON.stringify(extraccionGeneral).match(jsonRegEx.buscarCampos.menu)
-    let nombreDesplegarItem = JSON.stringify(extraccionGeneral).match(jsonRegEx.buscarCampos.nombreDesplegar)
-    let tipoAccionItem = JSON.stringify(extraccionGeneral).match(jsonRegEx.buscarCampos.tipoAccion)
-    let claveAccionItem = JSON.stringify(extraccionGeneral).match(jsonRegEx.buscarCampos.claveAccion)
-    nombreMenuItem = JSON.stringify(nombreMenuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-    menuItem = JSON.stringify(menuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '') 
-    nombreDesplegarItem = JSON.stringify(nombreDesplegarItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-    tipoAccionItem = JSON.stringify(tipoAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '') 
-    claveAccionItem = JSON.stringify(claveAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-    jsonTextoF.nombre= nombreMenuItem,
-    jsonTextoF.menu = menuItem,
-    jsonTextoF.nombreDesplegar= nombreDesplegarItem,
-    jsonTextoF.tipoAccion= tipoAccionItem,
-    jsonTextoF.claveAccion= claveAccionItem
-    var objItem = new Object();
-    objItem.nombre= nombreMenuItem,
-    objItem.menu = menuItem,
-    objItem.nombreDesplegar= nombreDesplegarItem,
-    objItem.tipoAccion= tipoAccionItem,
-    objItem.claveAccion= claveAccionItem
-  }
-  return {
-    jsonTextoF: jsonTextoF,
-    objItem: objItem
+    nombreMenuItem :nombreMenuItem,
+    menuItem: menuItem,
+    nombreDesplegarItem: nombreDesplegarItem,
+    tipoAccionItem: tipoAccionItem,
+    claveAccionItem: claveAccionItem
   }
 }
 
 exports.procesarArreglo = function(archivo, recodificacion, arreglo) {
-  //var jsonTexto = {}
   var extraccion = extraer(archivo, arreglo, recodificar(archivo, recodificacion))
-  //let extraccionCompleta = extraccion.extraccionCompleta
-  //let extraccionReducida= extraccion.extraccionReducida
-  //let jsonExtraido = extraccion.jsonTexto
-  //jsonTexto += jsonExtraido
-  //remplazarTexto(archivo, extraccionCompleta)
-  //console.log('Despues de remplazar retornmos: ' + extraccion.jsonTexto.nombreItem)
-  //extraccionCompleta = extraccionCompleta.replace(jsonRegEx.clsTexto.clsNull, '')
-  //objExtraccion = extraccion.arrayobjItem
-  //return objExtraccion
-  console.log('\n\n obj antes de retornar de procesar Arreglo ---------------\n\n')
-  console.log(extraccion)
   return extraccion
 }
 
 function recodificar(archivo, recodificacion) {
-  return iconvlite.decode(fs.readFileSync(archivo), recodificacion)
+  let extraccionMenuP = iconvlite.decode(fs.readFileSync(archivo), recodificacion)
+  return extraccionMenuP
 }
-
-function remplazarTexto (archivo, texto) {
-  fs.writeFile(nuevaCarpeta + archivo.replace(jsonRegEx.reducirRuta, ''), texto.replace(jsonRegEx.clsTexto.clsNull, ''), function (error) {
-    if (error) {
-      return console.log(error)
-    }
-    console.log('CODIFICACION ALMACENADA: ' +
-                 chardet.detectFileSync(nuevaCarpeta+archivo.replace(jsonRegEx.reducirRuta, '')) +
-                 '  --  ' +  archivo.replace(jsonRegEx.reducirRuta, ''))
-  })
-}
-
-// procesar(archivoMenuPrincipal, recodificacion)
-// procesar(archivoDLGMAVI, recodificacion)
