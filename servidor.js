@@ -55,8 +55,8 @@ aplicacion.get('/Menus/:Usuario', (solicitud, respuesta) => {
         consumo.push(item)
       }
         
-      let extraccionMenuP = extractor.procesarArreglo(extractor.archivoMenuPrincipal, extractor.recodificacion, consumo)
-      let extraccionDLGMAVI= extractor.procesarArreglo(extractor.archivoDLGMAVI, extractor.recodificacion, consumo)
+    let extraccionMenuP = extractor.procesarArreglo(extractor.archivoMenuPrincipal, extractor.recodificacion, consumo)
+    let extraccionDLGMAVI= extractor.procesarArreglo(extractor.archivoDLGMAVI, extractor.recodificacion, consumo)
         //let extraccionDLG= extractor.procesarArreglo(extractor.archivoDLGMAVI, extractor.recodificacion, consumo)
         // var extraccion = extraer(archivo, arreglo, recodificar(archivo, recodificacion))
         // let extraccionMenuP = extractor.extraer(extractor.archivoMenuPrincipal, consumo, extractor.recodificar(extractor.archivoMenuPrincipal, extractor))
@@ -75,9 +75,9 @@ aplicacion.get('/Menus/:Usuario', (solicitud, respuesta) => {
         //     item:extraccionMenuP
          //let lol = JSON.stringify(extraccionMenuP)
         // respuesta.json(lol.replace(/\\\\n/gm, '\n'))
-        var myString = JSON.stringify(extraccionMenuP.concat(extraccionDLGMAVI));
-        var myObj = JSON.parse(myString);
-        respuesta.send(myObj)
+      //var myString = JSON.stringify(extraccionMenuP);
+      //var myObj = JSON.parse(myString);
+        respuesta.send(extraccionMenuP)
         sql.close()
     })
   })

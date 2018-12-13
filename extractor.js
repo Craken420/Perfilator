@@ -23,10 +23,10 @@ const jsonRegEx = {
                    },
   'buscarCampos': {
     'todos':/Nombre\=.*?(?=\\)|(?<=\\n)Menu\=.*?(?=\\)|NombreDesplegar\=.*?(?=\\)|TipoAccion\=.*?(?=\\)|ClaveAccion\=.*?(?=\\)/gm,
-    'nombre':/(?<=Nombre\=).*?(?=\,)/gi,
-    'menu':/(?<=Menu\=).*?(?=\,)/gm,
-    'nombreDesplegar':/(?<=NombreDesplegar\=).*?(?=\,)/gm,
-    'tipoAccion':/(?<=TipoAccion\=).*?(?=\,)/gm,
+    'nombre':/(?<=Nombre\=).*/gi,
+    'menu':/(?<=Menu\=).*/gm,
+    'nombreDesplegar':/(?<=NombreDesplegar\=).*/gm,
+    'tipoAccion':/(?<=TipoAccion\=).*/gm,
     'claveAccion':/(?<=ClaveAccion\=).*/gm,
   }
 }
@@ -36,29 +36,145 @@ function crearExpresion (arreglo, posicion) {
   return new RegExp(`\\[.*?${arreglo[posicion].replace(jsonRegEx.buscarPunto, '\\.')}[^*]*?(?=\\[)`, `g`)
 }
 
-function extraer (archivo, arreglo, texto, jsonTexto) {
+function extraer (archivo, arreglo, texto) {
   texto = texto.replace(jsonRegEx.clsTexto.clsComentarios, '').replace(jsonRegEx.clsTexto.clsAmpersand, '') + '\n['
-  let extraccionCompleta = ''
-  var arrayobjItem = new Array();
+ // var arrayobjItem = new Array();
+  var obj = {}
+  let extraccionReducida = ''
   for(let posicion =0; posicion < arreglo.length; posicion++) {
-    extraccionFuncion = extraerTexto(archivo, crearExpresion(arreglo, posicion), extraccionCompleta, posicion, texto, arreglo, jsonTexto)
-    extraccionCompleta = extraccionFuncion.extraccionCompleta
-    jsonTexto = extraccionFuncion.jsonTexto
-   console.log('estado arreglo: ' + extraccionFuncion.objItem)
-   if ( extraccionFuncion.objItem != null)
-    arrayobjItem.push(extraccionFuncion.jsonTexto);
-   }
-  let extraccionReducida = extraccionFuncion.extraccionReducida
-  extraccionReducida = extraccionReducida.replace(jsonRegEx.limpiarCadena.limpiarObjeto, '').replace(jsonRegEx.limpiarCadena.buscarComa, '\n')
-  return {
-    extraccionReducida:extraccionReducida,
-    extraccionCompleta:extraccionCompleta,
-    jsonTexto,
-    arrayobjItem: arrayobjItem
-  } 
+    let expresion = crearExpresion(arreglo, posicion)
+    extraccionReducida = extraerTexto(expresion,texto)
+    let estado = extraccionReducida
+    //console.log('retorno de crearExpresion: ***********\n' +extraccionReducida + '\n*************' + typeof(extraccionReducida))
+    if (estado == 'null'){
+      console.log('extractor no encontro coincidencia')
+    } else {
+      let nombreMenuItem = extraccionReducida.match(jsonRegEx.buscarCampos.nombre)
+      let menuItem = extraccionReducida.match(jsonRegEx.buscarCampos.menu)
+      let nombreDesplegarItem = extraccionReducida.match(jsonRegEx.buscarCampos.nombreDesplegar)
+      let tipoAccionItem = extraccionReducida.match(jsonRegEx.buscarCampos.tipoAccion)
+      let claveAccionItem = extraccionReducida.match(jsonRegEx.buscarCampos.claveAccion)
+      console.log('***********primer sepillado\n')
+      console.log('nombreMenuItem:' + nombreMenuItem)
+      console.log('menuItem: ' + menuItem)
+      console.log('nombreDesplegarItem: ' + nombreDesplegarItem)
+      console.log('tipoAccionItem: ' + tipoAccionItem)
+      console.log('claveAccionItem: ' + claveAccionItem)
+      console.log('\n---------')
+      nombreMenuItem = JSON.stringify(nombreMenuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
+      menuItem = JSON.stringify(menuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '') 
+      nombreDesplegarItem = JSON.stringify(nombreDesplegarItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
+      tipoAccionItem = JSON.stringify(tipoAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
+      claveAccionItem = JSON.stringify(claveAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
+      console.log('***********Segundo cepillado \n')
+      console.log('nombreMenuItem:' + nombreMenuItem)
+      console.log('menuItem: ' + menuItem)
+      console.log('nombreDesplegarItem: ' + nombreDesplegarItem)
+      console.log('tipoAccionItem: ' + tipoAccionItem)
+      console.log('claveAccionItem: ' + claveAccionItem)
+      
+      obj[arreglo[posicion]] = {
+        'nombre': nombreMenuItem,
+        'menu': menuItem,
+        'nombreDesplegar': nombreDesplegarItem,
+        'tipoAccion': tipoAccionItem,
+        'claveAccion': claveAccionItem
+      }
+    }
+      // let nombreMenuItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.nombre)
+      // let menuItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.menu)
+      // let nombreDesplegarItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.nombreDesplegar)
+      // let tipoAccionItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.tipoAccion)
+      // let claveAccionItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.claveAccion)
+      // console.log('***********primer sepillado\n')
+      // console.log('nombreMenuItem:' + nombreMenuItem)
+      // console.log('menuItem: ' + menuItem)
+      // console.log('nombreDesplegarItem: ' + nombreDesplegarItem)
+      // console.log('tipoAccionItem: ' + tipoAccionItem)
+      // console.log('claveAccionItem: ' + claveAccionItem)
+      // console.log('\n---------')
+
+      // // let nombreMenuItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.nombre)
+      // // let menuItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.menu)
+      // // let nombreDesplegarItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.nombreDesplegar)
+      // // let tipoAccionItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.tipoAccion)
+      // // let claveAccionItem = JSON.stringify(extraccionReducida).match(jsonRegEx.buscarCampos.claveAccion)
+      // // console.log('***********primer sepillado\n')
+      // // console.log('nombreMenuItem:' + nombreMenuItem)
+      // // console.log('menuItem: ' + menuItem)
+      // // console.log('nombreDesplegarItem: ' + nombreDesplegarItem)
+      // // console.log('tipoAccionItem: ' + tipoAccionItem)
+      // // console.log('claveAccionItem: ' + claveAccionItem)
+      // // console.log('\n---------')
+
+      // // nombreMenuItem = JSON.stringify(nombreMenuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
+      // // menuItem = JSON.stringify(menuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '') 
+      // // nombreDesplegarItem = JSON.stringify(nombreDesplegarItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
+      // // tipoAccionItem = JSON.stringify(tipoAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '') 
+      // // claveAccionItem = JSON.stringify(claveAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
+      
+      
+      // console.log('***********Segundo cepillado \n')
+      // console.log('nombreMenuItem:' + nombreMenuItem)
+      // console.log('menuItem: ' + menuItem)
+      // console.log('nombreDesplegarItem: ' + nombreDesplegarItem)
+      // console.log('tipoAccionItem: ' + tipoAccionItem)
+      // console.log('claveAccionItem: ' + claveAccionItem)
+      
+      //console.log('\n--------')
+    // obj[arreglo[posicion]] = {
+    //   'nombre': nombreMenuItem,
+    //   'menu': menuItem,
+    //   'nombreDesplegar': nombreDesplegarItem,
+    //   'tipoAccion': tipoAccionItem,
+    //   'claveAccion': claveAccionItem
+    // }
+    }
+    //jsonTexto = extraccionFuncion.jsonTextoF
+    // for(key in arreglo){
+    //   if ( extraccionFuncion.objItem != null){
+    //     obj[arreglo[key]] = {
+    //       'nombre': extraccionFuncion.jsonTextoF.nombre,
+    //       'menu': extraccionFuncion.jsonTextoF.menu,
+    //       'nombreDesplegar': extraccionFuncion.jsonTextoF.nombreDesplegar,
+    //       'tipoAccion': extraccionFuncion.jsonTextoF.tipoAccion,
+    //       'claveAccion': extraccionFuncion.jsonTextoF.claveAccion
+    //     }
+    //   }
+    // }
+  //  console.log('estado arreglo: ' + extraccionFuncion.objItem)
+  //  if ( extraccionFuncion.objItem != null){
+  //   arrayobjItem.push(extraccionFuncion.jsonTextoF);
+  //  }
+
+  
+  console.log('\n\n obj antes de retornar ---------------\n\n')
+  console.log(obj)
+  return obj
+    //extraccionReducida:extraccionReducida,
+    //extraccionCompleta:extraccionCompleta,
+    //jsonTexto,
+    //arrayobjItem: arrayobjItem,
+    //obj
+   
 }
 
-function extraerTexto(archivo, expresion, extraccionCompleta, posicion, texto, arreglo, jsonTexto) {
+function extraerTexto(expresion, texto) {
+  let extraccion = JSON.stringify(texto.match(expresion)).match(jsonRegEx.buscarCampos.todos)
+ 
+    let extraccionString = JSON.stringify(extraccion)
+    extraccionString = extraccionString.replace(jsonRegEx.limpiarCadena.limpiarObjeto, '').replace(jsonRegEx.limpiarCadena.buscarComa, '\n')
+    return extraccionString
+  
+ 
+ 
+  //extraccionReducida = extraccionReducida.replace(jsonRegEx.limpiarCadena.limpiarObjeto, '').replace(jsonRegEx.limpiarCadena.buscarComa, '\n')
+  // return {
+  //   extraccionString
+  // }
+}
+
+function extraerTexto2(archivo, expresion, extraccionCompleta, posicion, texto, arreglo) {
   let extraccionGeneral =JSON.stringify(texto.match(expresion)).match(jsonRegEx.buscarCampos.todos)
   let extraccionReducida = JSON.stringify(extraccionGeneral)
   extraccionCompleta += extraccionReducida + '\n\n'
@@ -71,13 +187,15 @@ function extraerTexto(archivo, expresion, extraccionCompleta, posicion, texto, a
   return {
     extraccionCompleta: extraccionCompleta,
     extraccionReducida: extraccionReducida.replace(jsonRegEx.limpiarCadena.limpiarObjeto, '').replace(jsonRegEx.limpiarCadena.buscarComa, '\n'),
-    jsonTexto: jsonTextoMR.jsonTexto,
+    jsonTextoF: jsonTextoMR.jsonTextoF,
     objItem: jsonTextoMR.objItem
   } 
 }
 
-function extraerTextoJson(extraccionGeneral) {
-  var jsonTexto = {}
+
+
+function extraerTextoJson(extraccionGeneral, arreglo, posicion) {
+  var jsonTextoF = {}
   if (extraccionGeneral != null) {
     let nombreMenuItem = JSON.stringify(extraccionGeneral).match(jsonRegEx.buscarCampos.nombre)
     let menuItem = JSON.stringify(extraccionGeneral).match(jsonRegEx.buscarCampos.menu)
@@ -89,11 +207,11 @@ function extraerTextoJson(extraccionGeneral) {
     nombreDesplegarItem = JSON.stringify(nombreDesplegarItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
     tipoAccionItem = JSON.stringify(tipoAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '') 
     claveAccionItem = JSON.stringify(claveAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-    jsonTexto.nombre= nombreMenuItem,
-    jsonTexto.menu = menuItem,
-    jsonTexto.nombreDesplegar= nombreDesplegarItem,
-    jsonTexto.tipoAccion= tipoAccionItem,
-    jsonTexto.claveAccion= claveAccionItem
+    jsonTextoF.nombre= nombreMenuItem,
+    jsonTextoF.menu = menuItem,
+    jsonTextoF.nombreDesplegar= nombreDesplegarItem,
+    jsonTextoF.tipoAccion= tipoAccionItem,
+    jsonTextoF.claveAccion= claveAccionItem
     var objItem = new Object();
     objItem.nombre= nombreMenuItem,
     objItem.menu = menuItem,
@@ -102,23 +220,26 @@ function extraerTextoJson(extraccionGeneral) {
     objItem.claveAccion= claveAccionItem
   }
   return {
-    jsonTexto: jsonTexto,
+    jsonTextoF: jsonTextoF,
     objItem: objItem
   }
 }
 
 exports.procesarArreglo = function(archivo, recodificacion, arreglo) {
-  var jsonTexto = {}
-  var extraccion = extraer(archivo, arreglo, recodificar(archivo, recodificacion), jsonTexto)
-  let extraccionCompleta = extraccion.extraccionCompleta
-  let extraccionReducida= extraccion.extraccionReducida
-  let jsonExtraido = extraccion.jsonTexto
-  jsonTexto += jsonExtraido
-  remplazarTexto(archivo, extraccionCompleta)
-  console.log('Despues de remplazar retornmos: ' + extraccion.jsonTexto.nombreItem)
-  extraccionCompleta = extraccionCompleta.replace(jsonRegEx.clsTexto.clsNull, '')
-  objExtraccion = extraccion.arrayobjItem
-  return objExtraccion
+  //var jsonTexto = {}
+  var extraccion = extraer(archivo, arreglo, recodificar(archivo, recodificacion))
+  //let extraccionCompleta = extraccion.extraccionCompleta
+  //let extraccionReducida= extraccion.extraccionReducida
+  //let jsonExtraido = extraccion.jsonTexto
+  //jsonTexto += jsonExtraido
+  //remplazarTexto(archivo, extraccionCompleta)
+  //console.log('Despues de remplazar retornmos: ' + extraccion.jsonTexto.nombreItem)
+  //extraccionCompleta = extraccionCompleta.replace(jsonRegEx.clsTexto.clsNull, '')
+  //objExtraccion = extraccion.arrayobjItem
+  //return objExtraccion
+  console.log('\n\n obj antes de retornar de procesar Arreglo ---------------\n\n')
+  console.log(extraccion)
+  return extraccion
 }
 
 function recodificar(archivo, recodificacion) {
