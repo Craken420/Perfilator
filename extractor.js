@@ -46,7 +46,7 @@ function extraer (archivo, arreglo, texto) {
     extraccionReducida = extraerTexto(expresion,texto)
 
     if (extraccionReducida == 'null') {
-      console.log('extractor no encontro coincidencia')
+      //console.log('extractor no encontro coincidencia')
     } else {
 
       let datosObjeto = extraerTextoObjeto(extraccionReducida)
