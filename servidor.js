@@ -53,56 +53,23 @@ aplicacion.get('/Menus/:Usuario', (solicitud, respuesta) => {
         let item = respuestaSQL[i]["item"]
         consumo.push(item)
       }
+
       let extraccionMenuP = extractor.procesarArreglo(extractor.archivoMenuPrincipal, extractor.recodificacion, consumo)
       let extraccionDLGMAVI= extractor.procesarArreglo(extractor.archivoDLGMAVI, extractor.recodificacion, consumo)
-      // console.log(extraccionMenuP)
-      // console.log(extraccionDLGMAVI)
-      console.log('for')
+    
       for (key in extraccionMenuP) {
-        let cadena = [key]
-        console.log('\n-----------------------------------------\n')
-        console.log(cadena)
-      
+
         if (extraccionDLGMAVI[key]!=undefined) {
-            console.log('\ncoincidencia con : '+ [key] +'  en el extraccionDLGMAVI\n')
-            console.log('\n**************************')
-            console.log(`Contenido extraccionDLGMAVI en ${key}`)
-            console.log(extraccionDLGMAVI[key])
-            console.log('\n**************************')
-            console.log('\nObject.getOwnPropertyNames(extraccionDLGMAVI[key]):\n')
-            let cadena = Object.getOwnPropertyNames(extraccionDLGMAVI[key])
-            console.log(cadena)
-            console.log('\n**************************')
-            console.log('\ncadena[key]\n')
-            for (key2 in cadena) {
-              console.log(cadena[key2])
-              console.log('\ncextraccionDLGMAVI[key][cadena]-- valor del campo ejem(extraccionDLGMAVI[EXPAgente][nombreDesplegar]= ¡¡  soy el campo a modificar !!\n')
-              console.log(extraccionDLGMAVI[key][cadena[key2]])
-              console.log('\n**************************')
-              console.log('\nObjeto Sin Cambio\n')
-              console.log(extraccionMenuP[key])
-              console.log('\n**************************')
-              console.log('\nObjeto Con Cambio\n')
-              extraccionMenuP[key][cadena[key2]] = extraccionDLGMAVI[key][cadena[key2]]
-              console.log(extraccionMenuP[key])
-              console.log('\n**************************')
+            let propiedadObj = Object.getOwnPropertyNames(extraccionDLGMAVI[key])
+            for (key2 in propiedadObj) {
+              extraccionMenuP[key][propiedadObj[key2]] = extraccionDLGMAVI[key][propiedadObj[key2]]
             }
         }
-        console.log('\n-----------------------------------------\n')
-        console.log('objetos a eliminar')
-        console.log(extraccionDLGMAVI[key])
-        delete extraccionDLGMAVI[key];
-        console.log('eliminado')
-        console.log('\n-----------------------------------------\n')
+        delete extraccionDLGMAVI[key]
       }
 
-      console.log('\nAl terminal el proceso del for extraccionMenuP')
-      console.log(extraccionMenuP)
-      console.log('\nAl terminal el proceso del for extraccionDLGMAVI')
-      console.log(extraccionDLGMAVI)
-      var objMenuPCambio = Object.assign(extraccionMenuP, extraccionDLGMAVI);
-      console.log('\nAl terminal el proceso del for obj')
-      console.log(objMenuPCambio)
+      var objMenuPCambio = Object.assign(extraccionMenuP, extraccionDLGMAVI)
+      
       respuesta.send(objMenuPCambio)
       sql.close()
     })

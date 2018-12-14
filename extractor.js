@@ -1,4 +1,3 @@
-const chardet = require('chardet')
 const fs = require('fs')
 const iconvlite = require('iconv-lite')
 
@@ -11,46 +10,44 @@ exports.archivoMenuPrincipal = 'C:/Users/lapena/Documents/Luis Angel/Intelisis/I
 exports.recodificacion = 'Latin1'
 
 const jsonRegEx = {
-  'clsTexto' : {
-                'clsComentarios': /\;.*/g,
-                'clsAmpersand':   /\&/g,
-                'clsNull':        /null/gm,
-               },
-  'reducirRuta': /.*\//,
-  'buscarPunto': /\./g,
-  'limpiarCadena': {
-                     'limpiarObjeto': /[\\\[\"\]]/g,
-                     'buscarComa':    /\,/gm
-                   },
-  'buscarCampos': {
-    'todos':/Nombre\=.*?(?=\\)|(?<=\\n)Menu\=.*?(?=\\)|NombreDesplegar\=.*?(?=\\)|TipoAccion\=.*?(?=\\)|ClaveAccion\=.*?(?=\\)/gm,
-    'nombre':/(?<=Nombre\=).*/gi,
-    'menu':/(?<=Menu\=).*/gm,
-    'nombreDesplegar':/(?<=NombreDesplegar\=).*/gm,
-    'tipoAccion':/(?<=TipoAccion\=).*/gm,
-    'claveAccion':/(?<=ClaveAccion\=).*/gm,
+  'clsComentarios': /\;.*/g,
+  'clsAmpersand':   /\&/g,
+  'clsNull':        /null/gm,
+  'reducirRuta':    /.*\//,
+  'buscarPunto':    /\./g,
+  'limpiarObjeto':  /[\\\[\"\]]/g,
+  'buscarComa':     /\,/gm,
+  'todos': /Nombre\=.*?(?=\\)|(?<=\\n)Menu\=.*?(?=\\)|NombreDesplegar\=.*?(?=\\)|TipoAccion\=.*?(?=\\)|ClaveAccion\=.*?(?=\\)/gm,
+  'nombre': /(?<=Nombre\=).*/gi,
+  'menu': /(?<=Menu\=).*/gm,
+  'nombreDesplegar': /(?<=NombreDesplegar\=).*/gm,
+  'tipoAccion': /(?<=TipoAccion\=).*/gm,
+  'claveAccion': /(?<=ClaveAccion\=).*/gm,
+  'metodos': {
+    'limpiarTexto':   (texto) => {return texto.replace(jsonRegEx.clsComentarios, '').replace(jsonRegEx.clsAmpersand, '')},
+    'limpiarObjeto':  (texto) => {return texto.replace(jsonRegEx.limpiarObjeto, '').replace(jsonRegEx.buscarComa, '\n')},
+    'remplazarPunto': (arreglo, posicion) => {return arreglo[posicion].replace(jsonRegEx.buscarPunto, '\\.')}
   }
 }
 
 function crearExpresion (arreglo, posicion) {
-  return new RegExp(`\\[.*?${arreglo[posicion].replace(jsonRegEx.buscarPunto, '\\.')}[^*]*?(?=\\[)`, `g`)
+  return new RegExp(`\\[.*?${jsonRegEx.metodos.remplazarPunto(arreglo, posicion)}[^*]*?(?=\\[)`, `g`)
 }
 
-function extraer (archivo, arreglo, texto) {
-  texto = texto.replace(jsonRegEx.clsTexto.clsComentarios, '').replace(jsonRegEx.clsTexto.clsAmpersand, '') + '\n['
-  var objetoPerfiles = {}
+function extraer (arreglo, texto) {
+  texto = texto + '\n['
+  texto = jsonRegEx.metodos.limpiarTexto(texto)
+  
+  let objetoPerfiles = {}
   let extraccionReducida = ''
-  for(let posicion =0; posicion < arreglo.length; posicion++) {
 
-    let expresion = crearExpresion(arreglo, posicion)
-    extraccionReducida = extraerTexto(expresion,texto)
+  for(let posicion = 0; posicion < arreglo.length; posicion++) {
 
-    if (extraccionReducida == 'null') {
-      //console.log('extractor no encontro coincidencia')
-    } else {
+    extraccionReducida = extraerTexto(crearExpresion(arreglo, posicion), texto)
+
+    if (extraccionReducida !== 'null') {
 
       let datosObjeto = extraerTextoObjeto(extraccionReducida)
-      extraerTextoObjeto(extraccionReducida, arreglo, posicion)
 
       objetoPerfiles[arreglo[posicion]] = {
         'nombre': datosObjeto.nombreMenuItem,
@@ -65,10 +62,7 @@ function extraer (archivo, arreglo, texto) {
 }
 
 function extraerTexto(expresion, texto) {
-  let extraccion = JSON.stringify(texto.match(expresion)).match(jsonRegEx.buscarCampos.todos)
-    let extraccionString = JSON.stringify(extraccion)
-    extraccionString = extraccionString.replace(jsonRegEx.limpiarCadena.limpiarObjeto, '').replace(jsonRegEx.limpiarCadena.buscarComa, '\n')
-    return extraccionString
+  return jsonRegEx.metodos.limpiarObjeto(JSON.stringify( JSON.stringify(texto.match(expresion)).match(jsonRegEx.todos)))
 }
 
 function extraerTextoObjeto(extraccionReducida) {
@@ -78,20 +72,20 @@ function extraerTextoObjeto(extraccionReducida) {
   let tipoAccionItem = ''
   let claveAccionItem = ''
 
-  nombreMenuItem = extraccionReducida.match(jsonRegEx.buscarCampos.nombre)
-  menuItem = extraccionReducida.match(jsonRegEx.buscarCampos.menu)
-  nombreDesplegarItem = extraccionReducida.match(jsonRegEx.buscarCampos.nombreDesplegar)
-  tipoAccionItem = extraccionReducida.match(jsonRegEx.buscarCampos.tipoAccion)
-  claveAccionItem = extraccionReducida.match(jsonRegEx.buscarCampos.claveAccion)
+  nombreMenuItem = extraccionReducida.match(jsonRegEx.nombre)
+  menuItem = extraccionReducida.match(jsonRegEx.menu)
+  nombreDesplegarItem = extraccionReducida.match(jsonRegEx.nombreDesplegar)
+  tipoAccionItem = extraccionReducida.match(jsonRegEx.tipoAccion)
+  claveAccionItem = extraccionReducida.match(jsonRegEx.claveAccion)
 
-  nombreMenuItem = JSON.stringify(nombreMenuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-  menuItem = JSON.stringify(menuItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '') 
-  nombreDesplegarItem = JSON.stringify(nombreDesplegarItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-  tipoAccionItem = JSON.stringify(tipoAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
-  claveAccionItem = JSON.stringify(claveAccionItem).replace(jsonRegEx.limpiarCadena.limpiarObjeto, '')
+  nombreMenuItem = jsonRegEx.metodos.limpiarObjeto(JSON.stringify(nombreMenuItem))
+  menuItem = jsonRegEx.metodos.limpiarObjeto(JSON.stringify(menuItem)) 
+  nombreDesplegarItem = jsonRegEx.metodos.limpiarObjeto(JSON.stringify(nombreDesplegarItem))
+  tipoAccionItem = jsonRegEx.metodos.limpiarObjeto(JSON.stringify(tipoAccionItem))
+  claveAccionItem = jsonRegEx.metodos.limpiarObjeto(JSON.stringify(claveAccionItem))
   
   return {
-    nombreMenuItem :nombreMenuItem,
+    nombreMenuItem: nombreMenuItem,
     menuItem: menuItem,
     nombreDesplegarItem: nombreDesplegarItem,
     tipoAccionItem: tipoAccionItem,
@@ -99,12 +93,10 @@ function extraerTextoObjeto(extraccionReducida) {
   }
 }
 
-exports.procesarArreglo = function(archivo, recodificacion, arreglo) {
-  var extraccion = extraer(archivo, arreglo, recodificar(archivo, recodificacion))
-  return extraccion
+exports.procesarArreglo = (archivo, recodificacion, arreglo) => {
+  return extraer(arreglo, recodificar(archivo, recodificacion))
 }
 
 function recodificar(archivo, recodificacion) {
-  let extraccionMenuP = iconvlite.decode(fs.readFileSync(archivo), recodificacion)
-  return extraccionMenuP
+  return iconvlite.decode(fs.readFileSync(archivo), recodificacion)
 }
