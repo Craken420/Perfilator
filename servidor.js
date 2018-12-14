@@ -77,6 +77,48 @@ aplicacion.get('/Menus/:Usuario', (solicitud, respuesta) => {
   })
 })
 
+aplicacion.get('/Reportes/:Usuario', (solicitud, respuesta) => {
+  sql.connect(configuracion, (error) => {
+      if (error) console.log(error)
+      let solicitudSQL = new sql.Request()
+      solicitudSQL.input("param", sql.VarChar, solicitud.params.Usuario)
+      solicitudSQL.query("SELECT item FROM UsuarioReportes WHERE Usuario= @param", 
+      (error, resultado) => {
+          if (error) console.log(error)
+          respuesta.send(resultado.recordset)
+         sql.close()
+      })
+  })
+})
+aplicacion.get('/MovsConsultas/:Usuario', (solicitud, respuesta) => {
+  sql.connect(configuracion, (error) => {
+      if (error) console.log(error)
+      let solicitudSQL = new sql.Request()
+      solicitudSQL.input("param", sql.VarChar, solicitud.params.Usuario)
+      solicitudSQL.query("SELECT item FROM UsuarioMovsConsulta WHERE Usuario= @param", 
+      (error, resultado)  => {
+          if (error) console.log(error)
+          respuesta.send(resultado.recordset)
+         sql.close()
+      })
+  })
+})
+
+aplicacion.get('/MovsEdicion/:Usuario', (solicitud, respuesta) => {
+  sql.connect(configuracion, (error) => {
+      if (error) console.log(error)
+      let solicitudSQL = new sql.Request()
+      solicitudSQL.input("param", sql.VarChar, solicitud.params.Usuario)
+      solicitudSQL.query("SELECT item FROM UsuarioMovsEdicion WHERE Usuario= @param", 
+      (error, resultado)  => {
+          if (error) console.log(error)
+          respuesta.send(resultado.recordset)
+         sql.close()
+      })
+  })
+})
+
+
 const servidor = aplicacion.listen(puerto, () => {
   console.log(`Servidor corriendo en http://localhost:${puerto}`)
 })
