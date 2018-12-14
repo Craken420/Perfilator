@@ -9,6 +9,7 @@ aplicacion.use(bodyParser.json())
 aplicacion.use(express.json())
 aplicacion.use(express.urlencoded())
 sql.close()
+
 const puerto = 5000
 
 const configuracion = {
@@ -59,7 +60,7 @@ aplicacion.get('/Menus/:Usuario', (solicitud, respuesta) => {
     
       for (key in extraccionMenuP) {
 
-        if (extraccionDLGMAVI[key]!=undefined) {
+        if (extraccionDLGMAVI[key] != undefined) {
             let propiedadObj = Object.getOwnPropertyNames(extraccionDLGMAVI[key])
             for (key2 in propiedadObj) {
               extraccionMenuP[key][propiedadObj[key2]] = extraccionDLGMAVI[key][propiedadObj[key2]]
@@ -68,14 +69,14 @@ aplicacion.get('/Menus/:Usuario', (solicitud, respuesta) => {
         delete extraccionDLGMAVI[key]
       }
 
-      var objMenuPCambio = Object.assign(extraccionMenuP, extraccionDLGMAVI)
-      
+      let objMenuPCambio = Object.assign(extraccionMenuP, extraccionDLGMAVI)
+
       respuesta.send(objMenuPCambio)
       sql.close()
     })
   })
 })
 
-var servidor = aplicacion.listen(puerto, () => {
+const servidor = aplicacion.listen(puerto, () => {
   console.log(`Servidor corriendo en http://localhost:${puerto}`)
 })
