@@ -22,14 +22,11 @@ const configuracion = {
 aplicacion.get('/Usuario/:userId', (solicitud, respuesta) => {
   sql.connect(configuracion, (error) => {
     if (error) console.log(error)
-
     let solicitudSQL = new sql.Request()
     solicitudSQL.input("param", sql.VarChar, solicitud.params.userId)
-
     solicitudSQL.query("SELECT Usuario FROM Usuario WHERE Estatus='ALTA' AND Usuario LIKE '%[@param]%' ORDER BY Usuario ", 
     (error, resultado) => {
       if (error) console.log(error)
-
       respuesta.send(resultado.recordset)
       sql.close()
     })
@@ -39,17 +36,13 @@ aplicacion.get('/Usuario/:userId', (solicitud, respuesta) => {
 aplicacion.get('/Menus/:Usuario', (solicitud, respuesta) => {
   sql.connect(configuracion, (error) => {
     if (error) console.log(error)
-
     let solicitudSQL = new sql.Request()
     solicitudSQL.input("param", sql.VarChar, solicitud.params.Usuario)
-
     solicitudSQL.query("SELECT item FROM UsuarioMenuPrincipal WHERE Usuario = @param",
     (error, resultado) => {
       if (error) console.log(error)
-
       let respuestaSQL = resultado.recordset
       let consumo = []
-
       for(let i = 0; i < respuestaSQL.length; i++) {
         let item = respuestaSQL[i]["item"]
         consumo.push(item)
@@ -57,9 +50,7 @@ aplicacion.get('/Menus/:Usuario', (solicitud, respuesta) => {
 
       let extraccionMenuP = extractor.procesarArreglo(extractor.archivoMenuPrincipal, extractor.recodificacion, consumo)
       let extraccionDLGMAVI= extractor.procesarArreglo(extractor.archivoDLGMAVI, extractor.recodificacion, consumo)
-    
       for (key in extraccionMenuP) {
-
         if (extraccionDLGMAVI[key] != undefined) {
             let propiedadObj = Object.getOwnPropertyNames(extraccionDLGMAVI[key])
             for (key2 in propiedadObj) {
@@ -68,9 +59,7 @@ aplicacion.get('/Menus/:Usuario', (solicitud, respuesta) => {
         }
         delete extraccionDLGMAVI[key]
       }
-
       let objMenuPCambio = Object.assign(extraccionMenuP, extraccionDLGMAVI)
-
       respuesta.send(objMenuPCambio)
       sql.close()
     })
