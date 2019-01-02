@@ -7,7 +7,14 @@ var array = ['Mov.Ventas', 'Mov.Inventarios']
 const recodificacion = 'Latin1'
 const nuevaCarpeta= 'ArchivosNEW/'
 
-
+function remplazarTexto (archivo, texto) {
+  fs.writeFile(nuevaCarpeta+archivo.replace(/.*\//, ''), texto, function (err) {
+    if (err) {
+      return console.log(err)
+    }
+    console.log('CODIFICACION ALMACENADA: ' + chardet.detectFileSync(nuevaCarpeta+archivo.replace(/.*\//, '')) + '  --  ' + archivo.replace(/.*\//g, ''))
+  })
+}
 
 function extraer (archivo, array, texto) {
   texto = transformar(1, texto)
