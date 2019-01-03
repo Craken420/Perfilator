@@ -1,5 +1,5 @@
 {
-  "name": "perfilator",
+  "name": "servidor",
   "version": "1.0.0",
   "description": "Herramienta de extraccion de informacion de perfiles",
   "main": "extractor.js",
