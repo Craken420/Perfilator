@@ -13,8 +13,8 @@ sql.close()
 const puerto = 5000
 
 const configuracion = {
-  user: 'arbolanos',
-  password: 'Alma041995',
+  user: 'cadiaz',
+  password: '13021984',
   server: '172.16.202.9',
   database: 'IntelisisTmp'
 }

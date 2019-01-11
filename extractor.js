@@ -1,10 +1,10 @@
 const fs = require('fs')
 const iconvlite = require('iconv-lite')
 
-exports.archivoDLGMAVI = 'C:/Users/arbolanos/Documents/MIGRACION/Intelisis3100/Reportes MAVI' +
+exports.archivoDLGMAVI = '../3100Capacitacion/Reportes MAVI/' +
                        '/MenuPrincipal_DLG_MAVI.esp'
 
-exports.archivoMenuPrincipal = 'C:/Users/arbolanos/Documents/MIGRACION/Intelisis3100/Codigo Original/' +
+exports.archivoMenuPrincipal = '../3100Capacitacion/Codigo Original/' +
                              'MenuPrincipal.dlg'
 
 exports.recodificacion = 'Latin1'
