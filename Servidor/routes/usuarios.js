@@ -1,10 +1,18 @@
-var express = require('express');
-var router = express.Router();
-
 const sql = require("mssql")
+
+/*** Achivos ***/
+const { carpetas } = require('../public/javascripts/Utilerias/Archivos/jsonCarpetas')
+
+/*** Operadores de Base de datos ***/
 const dbConfig = require("../public/javascripts/BD/dbConfig")
-const extractor = require('../public/javascripts/Extractor/extractor')
-var db = require("../public/javascripts/BD/db")
+
+/*** Operadores de archivos ***/
+const recodificar = require('../public/javascripts/Utilerias/Codificacion/contenidoRecodificado')
+
+/*** Operadores de objetos ***/
+const { extraerMultiCmpCampos } = require(
+  '../public/javascripts/Utilerias/OperadorObjetos/extractorCmpCampos'
+)
 
 exports.usuarios = (solicitud, respuesta) => {
 
@@ -63,15 +71,28 @@ exports.menusUsuario = (solicitud, respuesta) => {
       if (error) console.log(error)
 
       let respuestaSQL = resultado.recordset
-      let consumo = []
+      let arregloComponentesHerramientas = []
 
       for (let i = 0; i < respuestaSQL.length; i++) {
 
         let item = respuestaSQL[i]["item"]
-        consumo.push(item)
+        arregloComponentesHerramientas.push(item)
       }
 
-      respuesta.send(extractor.enviarObj(consumo))
+      let arregloCamposBusqueda = ['Nombre','Menu','NombreDesplegar',
+                                   'TipoAccion','ClaveAccion']
+
+      respuesta.send( extraerMultiCmpCampos(
+                        arregloCamposBusqueda,
+                        arregloComponentesHerramientas,
+                        recodificar.extraerContenidoRecodificado(
+                            carpetas.archivoDLGMAVI3100
+                        ),
+                        recodificar.extraerContenidoRecodificado(
+                            carpetas.archivoMenuPrincipal3100
+                        )
+                      )
+                    )
       sql.close()
     })
   })
