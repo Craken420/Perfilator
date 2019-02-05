@@ -114,14 +114,27 @@ exports.reportesUsuario = (solicitud, respuesta) => {
       if (error) console.log(error)
 
       let respuestaSQL = resultado.recordset
-      let consumo = []
+      let arregloComponentesHerramientas = []
 
       for(let i = 0; i < respuestaSQL.length; i++) {
         let item = respuestaSQL[i]["item"]
-        consumo.push(item)
+        arregloComponentesHerramientas.push(item)
       }
 
-      respuesta.send(extractor.enviarObj(consumo))
+      let arregloCamposBusqueda = ['Nombre','Menu','NombreDesplegar',
+                                   'TipoAccion','ClaveAccion']
+
+      respuesta.send( extraerMultiCmpCampos(
+                        arregloCamposBusqueda,
+                        arregloComponentesHerramientas,
+                        recodificar.extraerContenidoRecodificado(
+                            carpetas.archivoDLGMAVI3100
+                        ),
+                        recodificar.extraerContenidoRecodificado(
+                            carpetas.archivoMenuPrincipal3100
+                        )
+                      )
+                    )
       sql.close()
       })
   })
