@@ -14,6 +14,8 @@ const { extraerMultiCmpCampos } = require(
   '../public/javascripts/Utilerias/OperadorObjetos/extractorCmpCampos'
 )
 
+const { arregloCampos } = require('../public/javascripts/Utilerias/Archivos/arregloCamposIntelisis')
+
 exports.usuarios = (solicitud, respuesta) => {
 
   sql.connect(dbConfig.configuracion, (error) => {
@@ -79,11 +81,8 @@ exports.menusUsuario = (solicitud, respuesta) => {
         arregloComponentesHerramientas.push(item)
       }
 
-      let arregloCamposBusqueda = ['Nombre','Menu','NombreDesplegar',
-                                   'TipoAccion','ClaveAccion']
-
       respuesta.send( extraerMultiCmpCampos(
-                        arregloCamposBusqueda,
+                        arregloCampos,
                         arregloComponentesHerramientas,
                         recodificar.extraerContenidoRecodificado(
                             carpetas.archivoDLGMAVI3100
@@ -121,11 +120,8 @@ exports.reportesUsuario = (solicitud, respuesta) => {
         arregloComponentesHerramientas.push(item)
       }
 
-      let arregloCamposBusqueda = ['Nombre','Menu','NombreDesplegar',
-                                   'TipoAccion','ClaveAccion']
-
       respuesta.send( extraerMultiCmpCampos(
-                        arregloCamposBusqueda,
+                        arregloCampos,
                         arregloComponentesHerramientas,
                         recodificar.extraerContenidoRecodificado(
                             carpetas.archivoDLGMAVI3100
