@@ -14,7 +14,9 @@ const { extraerMultiCmpCampos } = require(
   '../public/javascripts/Utilerias/OperadorObjetos/extractorCmpCampos'
 )
 
-const { arregloCampos } = require('../public/javascripts/Utilerias/Archivos/arregloCamposIntelisis')
+const { unirCamposConsecutivosComponente } = require(
+  '../public/javascripts/Utilerias/OperarCadenas/unirConsecutivoPorComponente'
+)
 
 exports.usuarios = (solicitud, respuesta) => {
 
@@ -82,13 +84,17 @@ exports.menusUsuario = (solicitud, respuesta) => {
       }
 
       respuesta.send( extraerMultiCmpCampos(
-                        arregloCampos,
+                        ['Nombre','Menu','NombreDesplegar', 'TipoAccion','ClaveAccion','Expresion'],
                         arregloComponentesHerramientas,
-                        recodificar.extraerContenidoRecodificado(
+                        unirCamposConsecutivosComponente(
+                          recodificar.extraerContenidoRecodificado(
                             carpetas.archivoDLGMAVI3100
+                          )
                         ),
-                        recodificar.extraerContenidoRecodificado(
+                        unirCamposConsecutivosComponente(
+                          recodificar.extraerContenidoRecodificado(
                             carpetas.archivoMenuPrincipal3100
+                          )
                         )
                       )
                     )
@@ -121,7 +127,7 @@ exports.reportesUsuario = (solicitud, respuesta) => {
       }
 
       respuesta.send( extraerMultiCmpCampos(
-                        arregloCampos,
+                        ['Nombre','Menu','NombreDesplegar','TipoAccion','ClaveAccion','Expresion'],
                         arregloComponentesHerramientas,
                         recodificar.extraerContenidoRecodificado(
                             carpetas.archivoDLGMAVI3100
